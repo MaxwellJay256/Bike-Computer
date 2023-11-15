@@ -4,14 +4,14 @@ HITSZ 2023 大一立项项目——自行车 GPS 码表
 
 Collaborators: [chaos](https://github.com/chaos0514), [Maxwell Jay](https://github.com/MaxwellJay256), [陈烨](https://github.com/CYCLECHENHUOHUA), [chickencheng](https://github.com/chickencheng)
 
-项目基于 ESP32 开发，使用 ESP-IDF 4.4.6 框架，使用 C 语言编写。
+项目基于 `ESP32` 开发，使用 `ESP-IDF 4.4.6` C 语言框架。
 
-## 计划
+## Contents
 
-- [ ] Cen 负责 PCB 的设计
-- [ ] 剩下的人先熟悉源码的整体框架
-- [ ] 后端：实现蓝牙连接、陀螺仪解算、GPS 解算
-- [ ] 前段：实现字体库和字体输出到屏幕
-- [ ] 设计并制作外壳
-- [ ] 测试
-- [ ] 制作文档、展示用 PPT
+- [Hardware](./Hardware)：硬件设计（电路原理图、PCB设计、元器件清单、外壳工程图等）的文档。
+- [main](./main)：项目的主要源代码。
+- ...
+
+## License
+
+本项目使用 MIT 协议开源，详见 [LICENSE](./LICENSE) 文件。
