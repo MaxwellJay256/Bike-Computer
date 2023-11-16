@@ -1,25 +1,29 @@
 name: esp-ci
 
 on:
-    push:
-        branches:
-        - main
-    pull_request:
-        branches:
-        - main
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-        - name: Checkout repository
-          uses: actions/checkout@v3
-          with:
-            submodules: 'recursive'
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
         
-        - name: Build with esp-idf
-          uses: espressif/esp-idf-ci-action@v1
-          with:
-            esp_idf_version: v4.4.6
-            target: esp32
-            path: ''
+      # Build with esp-idf
+      - name: Build with esp-idf
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: v4.4.6
+          target: esp32
+          path: ''
