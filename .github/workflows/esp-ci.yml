@@ -1,29 +1,35 @@
-name: esp-ci
+# 使用 GitHub Actions 自动构建 ESP-IDF 项目，验证提交的代码是否能够编译通过
+name: esp-idf CI
 
 on:
+  # 当有代码直接提交到 main 分支，或者发起 Pull Request 到 main 分支时，触发构建
+  # 但是忽略 Hardware 目录下的文件更改（硬件相关的文件不需要编译）
   push:
     branches:
-    - main
-  pull_request:
+      - main
+    paths-ignore:
+      - 'Hardware/**'
+  pull_request_target:
+    types:
+      - opened
     branches:
-    - main
+      - main
+    paths-ignore:
+      - 'Hardware/**'
 
 jobs:
   build:
-    name: Build
     runs-on: ubuntu-latest
-
     steps:
-      # Checkout the repository
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          submodules: 'recursive'
-        
-      # Build with esp-idf
-      - name: Build with esp-idf
-        uses: espressif/esp-idf-ci-action@v1
-        with:
-          esp_idf_version: v4.4.6
-          target: esp32
-          path: ''
+
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        submodules: 'recursive'
+    
+    - name: Build with esp-idf
+      uses: espressif/esp-idf-ci-action@v1
+      with:
+        esp_idf_version: v4.4.6
+        target: esp32
+        path: 'build'
