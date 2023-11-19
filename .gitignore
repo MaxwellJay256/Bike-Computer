@@ -10,7 +10,7 @@ CTestTestfile.cmake
 _deps
 
 # build output
-# build
+build
 
 # .vscode
 .vscode
