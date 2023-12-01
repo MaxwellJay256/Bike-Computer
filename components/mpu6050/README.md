@@ -4,7 +4,9 @@ This component is a driver for the MPU6050 6-axis motion tracking device.
 
 Author: [@MaxwellJay256](https://github.com/MaxwellJay256)
 
-Reference: [*esp32系列(10)：mpu6050驱动 - CSDN*](http://t.csdnimg.cn/vPGnV)
+Version: 1.0
+
+> Reference: [*esp32系列(10)：mpu6050驱动 - CSDN*](http://t.csdnimg.cn/vPGnV)
 
 ## Content
 

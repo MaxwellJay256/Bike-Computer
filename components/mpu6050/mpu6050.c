@@ -2,6 +2,7 @@
  * @file mpu6050.c
  * @brief MPU6050 driver source file
  * @author @MaxwellJay256
+ * @version v1.0
 */
 #include "mpu6050.h"
 

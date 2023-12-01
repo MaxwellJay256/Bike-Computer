@@ -2,6 +2,7 @@
  * @file mpu6050.h
  * @brief MPU6050 driver header file
  * @author @MaxwellJay256
+ * @version v1.0
 */
 #ifndef _MPU6050_H_
 #define _MPU6050_H_
