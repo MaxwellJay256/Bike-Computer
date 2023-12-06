@@ -2,14 +2,12 @@ idf_component_register(
     SRCS 
         "app_main.c"
         "./src"
-        "./src/hal"
-        "./src/gps/gps.c"
+        "./src/Bluetooth/bluetooth.c"
 
     INCLUDE_DIRS 
         "."
         "./include"
-        "./include/hal"
-        "./include/gps"
+        "./include/Bluetooth"
 
     EMBED_FILES
 
