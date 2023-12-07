@@ -4,9 +4,9 @@ This component is a driver for the MPU6050 6-axis motion tracking device.
 
 Author: [@MaxwellJay256](https://github.com/MaxwellJay256)
 
-Version: 1.0
+Version: 2.0
 
-> Reference: [*esp32系列(10)：mpu6050驱动 - CSDN*](http://t.csdnimg.cn/vPGnV)
+> Reference: [*MPU6050陀螺仪驱动代码移植，ESP-IDF，ESP32 - CSDN*](http://t.csdnimg.cn/3rzi2)
 
 ## Content
 
@@ -30,51 +30,6 @@ The default values are suitable for `ESP32-DevKitC`.
 #define MPU6050_I2C_PORT_NUM I2C_NUM_0 // MPU6050 的 I2C 端口号
 ```
 
-Next, in [`mpu6050.c`](./mpu6050.c), you should pay attention to the `mpu6050_init_cmd` structure, which provides the initialization commands for the MPU6050.
-
-```c
-static uint8_t mpu6050_init_cmd[MPU6050_INIT_CMD_COUNT][2] = {
-    // format: {address, data}
-    {0x6B, 0x80}, // PWR_MGMT_1, DEVICE_RESET
-    {0x6B, 0x00}, // clear SLEEP
-    {0x1B, 0x18}, // Gyroscope Full Scale Range = ± 2000 °/s
-    {0x1c, 0x00}, // Accelerometer Full Scale Range = ± 2g
-    {0x38, 0x00}, // Disable Interrupt
-    {0x6A, 0x00}, // User Control.auxiliary I2C are logically driven by the primary I2C bus
-    {0x23, 0x00}, // FIFO Enable.disable
-    {0x19, 0x63}, // Sample Rate Divider.Sample Rate = 1 kHz / (1 + 99) = 10 Hz
-    {0x1A, 0x13}, // EXT_SYNC_SET = GYRO_XOUT_L[0]; Bandwidth = 3
-    {0x6B, 0x01}, // Power Management 1.PLL with X axis gyroscope reference
-    {0x6C, 0x00}, // Power Management 2
-};
-```
-
-### Call the APIs
-
-Only two functions are provided in this component.
-
-#### `esp_err_t mpu6050_init()`
-
-This function initializes the MPU6050, with the macros and variables you have edited above.
-
-#### `mpu6050_output_t mpu6050_get_value()`
-
-This function reads the data from the MPU6050, and returns a `mpu6050_output_t` structure.
-
-The structure is defined as follows:
-
-```c
-typedef struct {
-    struct {
-        int16_t x; int16_t y; int16_t z;
-    } accel;
-    int16_t temp;
-    struct {
-        int16_t x; int16_t y; int16_t z;
-    } gyro;
-} mpu6050_output_t;
-```
-
 ### Example
 
 This is an example of running this component which simply
@@ -86,22 +41,45 @@ reads the data from the MPU6050 and prints it to the serial port.
 void app_main(void)
 {
     mpu6050_output_t mpu6050_out;
-    mpu6050_init();
+    mpu6050_config_t mpu6050_config = {
+        .gyro_fsr = 3,
+        .accel_fsr = 0,
+        .sample_rate = 100,
+    };
+
+    mpu6050_init(mpu6050_config);
 
     while (1)
     {
         mpu6050_out = mpu6050_get_value();
-        
+        //*/
         printf("accl_xout: %d\t", mpu6050_out.accel.x);
         printf("accl_yout: %d\t", mpu6050_out.accel.y);
         printf("accl_zout: %d\n", mpu6050_out.accel.z);
-        
+        //*/
         // printf("temp_out: %d\n;", mpu6050_out.temp);
-        
+        //*/
         printf("gyro_xout: %d\t", mpu6050_out.gyro.x);
         printf("gyro_yout: %d\t", mpu6050_out.gyro.y);
         printf("gyro_zout: %d\n", mpu6050_out.gyro.z);
-        
-        vTaskDelay(100 / portTICK_RATE_MS);
-    }
+        //*/
+        vTaskDelay(pdMS_TO_TICKS(200));
+    }    
 }
+```
+
+If the initialization is successful, the log will be like this:
+
+```
+I (323) MPU6050: MPU6050 Initializing...
+I (333) MPU6050: i2c_param_config: ESP_OK
+I (333) MPU6050: i2c_driver_install: ESP_OK
+I (433) MPU6050: Set gyroscopes full-scale range to ±2000 °/s.
+I (433) MPU6050: Set accelerometers full-scale range to ±2g.
+I (433) MPU6050: Set sampling rate to 50 Hz.
+I (433) MPU6050: Set low pass filter to 25 Hz.
+I (443) MPU6050: Read mpu6050_device_id: 0x68
+I (443) MPU6050: Set sampling rate to 50 Hz.
+I (453) MPU6050: Set low pass filter to 25 Hz.
+I (453) MPU6050: Init Success.
+```
