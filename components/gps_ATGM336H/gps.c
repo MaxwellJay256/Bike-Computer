@@ -4,13 +4,9 @@
 */
 #include "gps.h"
 
-
-/// @brief GPS模块的串口数据缓存
 char *GPS_temp_data = NULL;
 char *row = NULL;
 static const int GPS_RX_BUF_SIZE = 1024;
-    
-
 static const char *GPS_TAG = "GPS";
 
 //GPS模块输出数据例子
@@ -36,7 +32,8 @@ $GPTXT,01,01,01,ANTENNA OPEN*25\n\
 typedef struct {
     double latitude;
     double longitude;
-    double speed;
+    double speed_kmh; // 单位：千米每小时
+    double speed_ms; // 单位：米每秒
 } GPSData;
 
 
@@ -75,16 +72,17 @@ static void read_uart_GPS(void *arg)
                         gps_data.longitude = atof(token) / 100;
                         break;
                     case 8: // 速度
-                        gps_data.speed = atof(token);
-                        gps_data.speed *= 1.852; // 节转换为千米每小时
+                        gps_data.speed_kmh = atof(token); // 默认为节
+                        gps_data.speed_kmh *= 1.852; // 节转换为千米每小时
+                        gps_data.speed_ms = gps_data.speed_kmh / 3.6; // 千米每小时转换为米每秒
                         break;
                     }
                     token = strtok(NULL, ",");
                 }
-                ESP_LOGI(GPS_TAG, "lat: %f,   lon: %f   \n", gps_data.latitude, gps_data.longitude); // 输出经纬度，测试用
-                    ESP_LOGE(GPS_TAG, "speed: %f\n", gps_data.speed); // 输出速度，测试用
-                ESP_LOGI(GPS_TAG, "======================================================\n");
-                // 待完善：任务无法
+                // ESP_LOGI(GPS_TAG, "lat: %f,   lon: %f   \n", gps_data.latitude, gps_data.longitude); // 输出经纬度，测试用
+                //     ESP_LOGE(GPS_TAG, "speed: %f\n", gps_data.speed_ms); // 输出速度，测试用
+                // ESP_LOGI(GPS_TAG, "======================================================\n");
+                //! 此处可加入显示函数，显示经纬度和速度
             }
         }
         vTaskDelay(1000 / portTICK_RATE_MS);
@@ -97,7 +95,7 @@ esp_err_t GPS_init()
 {
     ESP_LOGI(GPS_TAG, "GPS ATGM336H Initializing...\n");
     esp_err_t esp_err;
-    // 8位数据位，无校验，1位停止位，无硬件流控制
+    // 8位数据位，无校验，1位停止位，无硬件流控制，模块默认波特率9600（可修改）
 	const uart_config_t uart_config_GPS = {
 		.baud_rate = 9600,
 		.data_bits = UART_DATA_8_BITS,

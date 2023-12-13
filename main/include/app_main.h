@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "bluetooth.h"
 #include "gps.h"
 
 #endif  //_APP_MAIN_H_
