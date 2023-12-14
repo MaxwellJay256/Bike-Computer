@@ -9,4 +9,4 @@
 #include <stdlib.h>
 #include <string.h>
 
-#endif // _APP_MAIN_H_
+#endif  //_APP_MAIN_H_

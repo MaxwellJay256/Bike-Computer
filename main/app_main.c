@@ -7,5 +7,5 @@
 /// @brief Main application entry point
 void app_main(void)
 {
-    
+    printf("Hello world!\n");
 }
