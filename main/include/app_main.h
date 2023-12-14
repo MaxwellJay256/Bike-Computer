@@ -1,3 +1,7 @@
+/**
+ * @file app_main.h
+ * @brief Main application header file
+*/
 #ifndef _APP_MAIN_H_
 #define _APP_MAIN_H_
 
