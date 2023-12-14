@@ -23,7 +23,19 @@
 #define UART_GPS_TXD GPIO_NUM_16
 #define UART_GPS_RXD GPIO_NUM_18
 
+/// @brief GPS数据结构体
+typedef struct
+{
+    double latitude;
+    double longitude;
+    double speed_kmh; // 单位：千米每小时
+    double speed_ms;  // 单位：米每秒
+} GPS_data;
+
 /// @brief 初始化 GPS模块
 esp_err_t GPS_init();
+
+/// @brief 从 GPS模块读取数据
+GPS_data get_gps_value();
 
 #endif
