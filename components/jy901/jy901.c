@@ -1,4 +1,4 @@
-#include "JY901.h"
+#include "jy901.h"
 
 // 创建一个JY901_DATA的实例
 JY901_DATA jy901_data;
