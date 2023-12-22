@@ -16,5 +16,5 @@ build
 .vscode
 
 # sdkconfig
-sdkconfig
-sdkconfig.old
+# sdkconfig
+# sdkconfig.old
