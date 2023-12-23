@@ -24,3 +24,7 @@ void app_main()
   }
 }
 ```
+
+## Reference
+
+- [JY901S产品资料 - 维特智能](https://wit-motion.yuque.com/wumwnr/docs/khbgzd?singleDoc#%20%E3%80%8AJY901S%E4%BA%A7%E5%93%81%E8%B5%84%E6%96%99%E3%80%8B)
