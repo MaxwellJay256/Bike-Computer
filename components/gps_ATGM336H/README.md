@@ -28,9 +28,10 @@ GNGGA：Global Positioning System Fix Data
 
 
 
-典型GNRMC数据  
+典型GNRMC数据
+``` 
 $GNRMC,132506.000,A,2233.87430,N,11407.13740,E,0.00,244.71,080522,,,A,V*0A\n\
-
+```
 
 GNRMC解读  
 字段 1：UTC时间，hhmmss.sss格式  

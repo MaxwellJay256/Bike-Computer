@@ -1,3 +1,3 @@
 [submodule "components/epaper"]
 	path = components/epaper
-	url = https://github.com/MaxwellJay256/GDEY0154D67-esp32-driver
+	url = git@github.com:MaxwellJay256/GDEY0154D67-esp32-driver.git
