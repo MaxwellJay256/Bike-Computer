@@ -3,9 +3,10 @@
  * @brief Main application source code
 */
 #include "app_main.h"
+#include "epd.h"
 
 /// @brief Main application entry point
-void app_main(void)
+extern "C" void app_main(void)
 {
     printf("Hello world!\n");
 }
