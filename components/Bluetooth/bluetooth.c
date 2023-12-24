@@ -162,7 +162,7 @@ static const esp_gatts_attr_db_t gatt_db[HRS_IDX_NB] =
 
         /* Client Characteristic Configuration Descriptor */
         [IDX_CHAR_CFG_TEMP] =
-            {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&character_client_config_uuid, ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE, sizeof(uint16_t), sizeof(temp1), }},
+            {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&character_client_config_uuid, ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE, sizeof(uint16_t), sizeof(temp1),(uint8_t *)temp2 }},
 
 };
 

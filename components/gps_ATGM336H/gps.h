@@ -37,7 +37,7 @@ typedef struct GPS_data_
     int second;
     int day;
     int month;
-    int year; 
+    int year;
 }GPS_data;
 
 typedef struct UTC_time
@@ -61,4 +61,4 @@ esp_err_t GPS_init();
 /// @brief 从 GPS模块读取数据
 GPS_data get_gps_value();
 
-#endif
+#endif 
