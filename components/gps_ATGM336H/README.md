@@ -22,7 +22,11 @@ $GNZDA,132506.000,08,05,2022,00,00*44\n\
 $GPTXT,01,01,01,ANTENNA OPEN*25\n\
 ";
 ```
-GNRMC：Global Navigation Satellite System Recommended Minimum Specific GNSS Data 
+GNRMC：Global Navigation Satellite System Recommended Minimum Specific GNSS Data   
+
+GNGGA：Global Positioning System Fix Data  
+
+
 
 典型GNRMC数据
 ``` 
@@ -42,7 +46,27 @@ GNRMC解读
 字段10：磁偏角，（000 - 180）度（前导位数不足则补0）  
 字段11：磁偏角方向，E=东，W=西  
 字段12：模式，A=自动，D=差分，E=估测，N=数据无效（3.0协议内容）  
-字段13：校验值
+字段13：校验值  
+  
+
+典型GNGGA数据$GNGGA,084024.000,2235.38880,N,11357.84205,E,1,18,0.8,13.0,M,0.0,M,,*4C
+  
+
+GNGGA解读  
+字段 1：UTC 时间，格式为 hhmmss.ss；  
+字段 2：纬度，格式为 ddmm.mmmmm（度分格式）；  
+字段 3：纬度半球，N 或 S（北纬或南纬）；  
+字段 4：经度，格式为 dddmm.mmmmm（度分格式）；
+字段 5：经度半球，E 或 W（东经或西经）；
+字段 6：GPS 状态，0=未定位，1=非差分定位，2=差分定位；  
+字段 7：正在使用的用于定位的卫星数量（00~12）  
+字段 8：HDOP 水平精确度因子（0.5~99.9）  
+字段 9：海拔高度（-9999.9 到 9999.9 米）  
+字段 10：大地水准面高度（-9999.9 到 9999.9 米）  
+字段 11：差分时间（从最近一次接收到差分信号开始的秒数，非差分定位，此项为空）  
+字段 12：差分参考基站标号（0000 到 1023，首位 0 也将传送，非差分定位，此项为空)
+
+
 ## Usage
 
 ### modify the macros 

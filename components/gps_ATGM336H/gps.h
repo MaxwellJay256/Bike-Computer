@@ -24,13 +24,36 @@
 #define UART_GPS_RXD GPIO_NUM_18
 
 /// @brief GPS数据结构体
-typedef struct
+typedef struct GPS_data_
 {
     double latitude;
     double longitude;
     double speed_kmh; // 单位：千米每小时
     double speed_ms;  // 单位：米每秒
-} GPS_data;
+    double course;  // 航向角，单位：度
+    double altitude; // 海拔高度，单位：米
+    int hour;
+    int minute;
+    int second;
+    int day;
+    int month;
+    int year;
+}GPS_data;
+
+typedef struct UTC_time
+{
+    int hour;
+    int minute;
+    int second;
+}UTCtime;
+
+typedef struct UTC_date
+{
+    int day;
+    int month;
+    int year;
+}UTCdate;
+
 
 /// @brief 初始化 GPS模块
 esp_err_t GPS_init();
@@ -38,4 +61,4 @@ esp_err_t GPS_init();
 /// @brief 从 GPS模块读取数据
 GPS_data get_gps_value();
 
-#endif
+#endif 

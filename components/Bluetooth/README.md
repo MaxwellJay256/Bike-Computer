@@ -33,7 +33,7 @@ BLE 服务端传输消息主要是用 notification（即 notify）和 indication
 在 idf 的例程 `Gatt_Server_Service_Table/tutorial` 文件夹下有说明，但仍冗杂，下面仅介绍大致的框架结构，同时各个函数也写了一些注释。
 
 ### 服务表（Service Table）  
-
+每个服务对应一个服务表，表的第一个元素是服务声明，随后是特征的声明，第三个是特征值，值为temp2，第四个元素使客户端特性配置描述符，如果还要添加特征则在表中仿照第二三四的格式加入对应的配置。
 ```c
 enum
 {
@@ -45,7 +45,31 @@ enum
     
     HRS_IDX_NB,
 };
-```  
+
+static const esp_gatts_attr_db_t gatt_db[HRS_IDX_NB] =
+{
+        // Service Declaration
+        [IDX_SVC] =
+            {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&primary_service_uuid, ESP_GATT_PERM_READ, sizeof(uint16_t), sizeof(GATTS_SERVICE_UUID_TEST), (uint8_t *)&GATTS_SERVICE_UUID_TEST}},
+
+        /* Characteristic Declaration */
+        // 读及通知
+        [IDX_CHAR_TEMP] =
+            {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&character_declaration_uuid, ESP_GATT_PERM_READ, CHAR_DECLARATION_SIZE, CHAR_DECLARATION_SIZE, (uint8_t *)&char_prop_read_notify}},
+
+        /* Characteristic Value */
+        [IDX_CHAR_VAL_TEMP] =
+            {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&GATTS_CHAR_UUID_TEST_TEMP, ESP_GATT_PERM_READ, GATTS_DEMO_CHAR_VAL_LEN_MAX, sizeof(temp2), (uint8_t *)temp2}},
+
+        /* Client Characteristic Configuration Descriptor */
+        [IDX_CHAR_CFG_TEMP] =
+            {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&character_client_config_uuid, ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE, sizeof(uint16_t), sizeof(temp1), (uint8_t *)temp1}},
+};
+```
+如果要新建一个服务表，则
+在gatts_profile_event_handler中的ESP_GATTS_REG_EVT 的case中的esp_ble_gatts_create_attr_tab里进行注册，同时还要在ESP_GATTS_CREAT_ATTR_TAB_EVT的case中用esp_ble_gatts_start_service开启服务
+
+
 ### 主入口  
 对于 `bluetooth_init()` 函数，在主程序中只需直接调用，实际的功能函数就在 `Bluetooth.c` 里加入和修改即可。
 
@@ -102,6 +126,7 @@ void bluetooth_init()
 
 ### GAP 事件处理  
 主要是开始广播，建立连接等
+
 
 ### GATT 事件处理  
 本项目中主要用到的是 Write event，即手机端主动打开 notify，esp32 便不断发送消息。
@@ -192,6 +217,7 @@ static void get_temp(void *arg)
                 esp_ble_gatts_set_attr_value(handle_table[IDX_CHAR_VAL_TEMP], sizeof(normal), normal); 
                 esp_ble_gatts_send_indicate(profile_tab[0].gatts_if, profile_tab[0].conn_id,handle_table[IDX_CHAR_VAL_TEMP], sizeof(normal), normal, false);//发送数据
             }
+
         } else {
             vTaskDelete(NULL);
         }

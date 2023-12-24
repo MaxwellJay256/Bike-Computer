@@ -133,13 +133,14 @@ static struct gatts_profile_inst profile_tab[PROFILE_NUM] = {
 };
 
 /* Service */
-static const uint16_t GATTS_SERVICE_UUID_TEST = 0x00FF;
-static const uint16_t GATTS_CHAR_UUID_TEST_TEMP = 0xFF01;
+static const uint16_t GATTS_SERVICE_UUID_TEST = 0x00FF; // 服务的UUID
+static const uint16_t GATTS_CHAR_UUID_TEST_TEMP = 0xFF01; // 特征值的UUID
 
 static const uint16_t primary_service_uuid = ESP_GATT_UUID_PRI_SERVICE;
 static const uint16_t character_declaration_uuid = ESP_GATT_UUID_CHAR_DECLARE;
 static const uint16_t character_client_config_uuid = ESP_GATT_UUID_CHAR_CLIENT_CONFIG;
-static const uint8_t char_prop_read_notify = ESP_GATT_CHAR_PROP_BIT_READ | ESP_GATT_CHAR_PROP_BIT_NOTIFY;
+static const uint8_t char_prop_read_notify = ESP_GATT_CHAR_PROP_BIT_READ | ESP_GATT_CHAR_PROP_BIT_NOTIFY; // 特征值的属性，因需要传入一个参数，所以将两个属性合并
+
 static const uint8_t temp1[2] = {0x00, 0x00};
 static const uint8_t temp2[20] = {0x00};
 
@@ -151,6 +152,7 @@ static const esp_gatts_attr_db_t gatt_db[HRS_IDX_NB] =
             {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&primary_service_uuid, ESP_GATT_PERM_READ, sizeof(uint16_t), sizeof(GATTS_SERVICE_UUID_TEST), (uint8_t *)&GATTS_SERVICE_UUID_TEST}},
 
         /* Characteristic Declaration */
+        // 读及通知
         [IDX_CHAR_TEMP] =
             {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&character_declaration_uuid, ESP_GATT_PERM_READ, CHAR_DECLARATION_SIZE, CHAR_DECLARATION_SIZE, (uint8_t *)&char_prop_read_notify}},
 
@@ -160,7 +162,7 @@ static const esp_gatts_attr_db_t gatt_db[HRS_IDX_NB] =
 
         /* Client Characteristic Configuration Descriptor */
         [IDX_CHAR_CFG_TEMP] =
-            {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&character_client_config_uuid, ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE, sizeof(uint16_t), sizeof(temp1), (uint8_t *)temp1}},
+            {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&character_client_config_uuid, ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE, sizeof(uint16_t), sizeof(temp1),(uint8_t *)temp2 }},
 
 };
 
@@ -394,11 +396,13 @@ static void gatts_profile_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_
         }
         adv_config_done |= SCAN_RSP_CONFIG_FLAG;
 #endif
-        esp_err_t create_attr_ret = esp_ble_gatts_create_attr_tab(gatt_db, gatts_if, HRS_IDX_NB, SVC_INST_ID);
+        esp_err_t create_attr_ret = esp_ble_gatts_create_attr_tab(gatt_db, gatts_if, HRS_IDX_NB, SVC_INST_ID); //创建GATT服务表
+        // esp_err_t create_attr_ret_2 = esp_ble_gatts_create_attr_tab(gatt_db, gatts_if, HRS_IDX_NB_2, 1);如要创建新表则仿写此行
         if (create_attr_ret)
         {
             ESP_LOGE(GATTS_TABLE_TAG, "create attr table failed, error code = %x", create_attr_ret);
         }
+
     }
     break;
 
@@ -499,7 +503,7 @@ static void gatts_profile_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_
         ESP_LOGI(GATTS_TABLE_TAG, "ESP_GATTS_DISCONNECT_EVT, reason = 0x%x", param->disconnect.reason);
         esp_ble_gap_start_advertising(&adv_params);
         break;
-    case ESP_GATTS_CREAT_ATTR_TAB_EVT:
+    case ESP_GATTS_CREAT_ATTR_TAB_EVT: //如果要创建新的服务表，仿写此处
     {
         if (param->add_attr_tab.status != ESP_GATT_OK)
         {
@@ -516,6 +520,7 @@ static void gatts_profile_event_handler(esp_gatts_cb_event_t event, esp_gatt_if_
             ESP_LOGI(GATTS_TABLE_TAG, "create attribute table successfully, the number handle = %d\n", param->add_attr_tab.num_handle);
             memcpy(handle_table, param->add_attr_tab.handles, sizeof(handle_table));
             esp_ble_gatts_start_service(handle_table[IDX_SVC]); 
+             
         }
         break;
     }

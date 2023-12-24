@@ -36,6 +36,7 @@
 #define ADV_CONFIG_FLAG (1 << 0)
 #define SCAN_RSP_CONFIG_FLAG (1 << 1)
 
+// 服务表
 enum
 {
     IDX_SVC,
