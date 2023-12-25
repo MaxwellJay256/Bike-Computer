@@ -4,7 +4,7 @@
  */
 #include "jy901s.h"
 
-JY901S_DATA jy901s_data;
+//JY901S_DATA jy901s_data;
 
 static const char *TAG = "JY901S"; // 日志标签
 
@@ -25,8 +25,8 @@ void jy901s_init()
     uart_driver_install(UART_NUM, BUF_SIZE * 2, 0, 0, NULL, 0);
 }
 
-// 接收数据
-void jy901s_read()
+// 接收处理数据，返回JY901S_DATA结构体
+JY901S_DATA jy901s_read(JY901S_DATA jy901s_data)
 {
     uint8_t buffer[BUF_SIZE]; // 接收缓冲区
     int len = 0;              // 接收数据长度
@@ -74,26 +74,26 @@ void jy901s_read()
                 {
                     // ESP_LOGI(TAG, "Data valid");
                     // 处理数据
-                    //  根据数据帧的第二个字节（功能字节）判断数据类型
+                    // 根据数据帧的第二个字节（功能字节）判断数据类型
                     switch (type)
                     {
                     case 0x51: // 加速度
                         // 将数据存储到jy901_data结构体中
-                        jy901s_data.accX = data1; // 读取X轴加速度
-                        jy901s_data.accY = data2; // 读取Y轴加速度
-                        jy901s_data.accZ = data3; // 读取Z轴加速度
+                        jy901s_data.accX = data1/32768.0*16*g; // 读取X轴加速度
+                        jy901s_data.accY = data2/32768.0*16*g; // 读取Y轴加速度
+                        jy901s_data.accZ = data3/32768.0*16*g; // 读取Z轴加速度
                         break;
                     case 0x52: // 角速度
                         // 将数据存储到jy901_data结构体中
-                        jy901s_data.gyroX = data1; // 读取X轴角速度
-                        jy901s_data.gyroY = data2; // 读取Y轴角速度
-                        jy901s_data.gyroZ = data3; // 读取Z轴角速度
+                        jy901s_data.gyroX = data1/32768.0*2000; // 读取X轴角速度
+                        jy901s_data.gyroY = data2/32768.0*2000; // 读取Y轴角速度
+                        jy901s_data.gyroZ = data3/32768.0*2000; // 读取Z轴角速度
                         break;
                     case 0x53: // 角度
                         // 将数据存储到jy901_data结构体中
-                        jy901s_data.roll = data1;  // 读取横滚角
-                        jy901s_data.pitch = data2; // 读取俯仰角
-                        jy901s_data.yaw = data3;   // 读取偏航角
+                        jy901s_data.roll  = data1/ 32768.0 * 180.0;  // 读取横滚角
+                        jy901s_data.pitch = data2/ 32768.0 * 180.0;  // 读取俯仰角
+                        jy901s_data.yaw   = data3/ 32768.0 * 180.0;  // 读取偏航角
                         // printf(i);
                         break;
                     case 0x54: // 磁场
@@ -117,21 +117,130 @@ void jy901s_read()
     {
         ESP_LOGW(TAG, "No data");
     }
+    return jy901s_data;
 }
 
-// 打印JY901的数据
-void jy901s_print()
+// 打印JY901的所有数据到串口
+void jy901s_printall(JY901S_DATA jy901s_data)
 {
     // 打印数据到串口
-    printf("Roll: ");                                 // 打印横滚角
-    printf("%f", jy901s_data.roll / 32768.0 * 180.0); // 转换为角度
+    //角度
+    printf("Roll: ");               // 打印横滚角
+    printf("%f", jy901s_data.roll); // 转换为角度
     printf("°\t");
 
-    printf("Pitch: ");                                 // 打印俯仰角
-    printf("%f", jy901s_data.pitch / 32768.0 * 180.0); // 转换为角度
+    printf("Pitch: ");               // 打印俯仰角
+    printf("%f", jy901s_data.pitch); // 转换为角度
     printf("°\t");
 
-    printf("Yaw: ");                                 // 打印偏航角
-    printf("%f", jy901s_data.yaw / 32768.0 * 180.0); // 转换为角度
+    printf("Yaw: ");                 // 打印偏航角
+    printf("%f", jy901s_data.yaw);   // 转换为角度
     printf("°\n");
+
+    //加速度
+    printf("accX: ");                // 打印accX
+    printf("%f", jy901s_data.accX);  // 转换为加速度
+    printf("m/s^2\t");
+
+    printf("accY: ");                 // 打印accY
+    printf("%f", jy901s_data.accY);   // 转换为加速度
+    printf("m/s^2\t");
+
+    printf("accZ: ");                 // 打印accZ
+    printf("%f", jy901s_data.accZ);   // 转换为加速度
+    printf("m/s^2\n");
+    
+    //角速度
+    printf("gyroX: ");                // 打印X
+    printf("%f", jy901s_data.gyroX);  // 转换为角速度
+    printf("°/s\t");
+
+    printf("gyroY: ");                // 打印Y
+    printf("%f", jy901s_data.gyroY);  // 转换为角速度
+    printf("°/s\t");
+
+    printf("gyroZ: ");                // 打印Z
+    printf("%f", jy901s_data.gyroZ);  // 转换为角速度
+    printf("°/s\n");
+
+    //磁场
+    printf("magX: ");              // 打印X
+    printf("%f", jy901s_data.magX);  
+    printf("mGs\t");
+
+    printf("magY: ");             // 打印Y
+    printf("%f", jy901s_data.magY); 
+    printf("mGs\t");
+
+    printf("magZ: ");             // 打印Z
+    printf("%f", jy901s_data.magZ);   
+    printf("mGs\n");
+}
+
+// 打印JY901的角度数据到串口
+void jy901s_printangle(JY901S_DATA jy901s_data)
+{
+    //角度
+    printf("Roll: ");               // 打印横滚角
+    printf("%f", jy901s_data.roll); // 转换为角度
+    printf("°\t");
+
+    printf("Pitch: ");               // 打印俯仰角
+    printf("%f", jy901s_data.pitch); // 转换为角度
+    printf("°\t");
+
+    printf("Yaw: ");                 // 打印偏航角
+    printf("%f", jy901s_data.yaw);   // 转换为角度
+    printf("°\n");
+}
+
+// 打印JY901的角速度数据到串口
+void jy901s_printgyro(JY901S_DATA jy901s_data)
+{
+    //角速度
+    printf("gyroX: ");                // 打印X
+    printf("%f", jy901s_data.gyroX);  // 转换为角速度
+    printf("°/s\t");
+
+    printf("gyroY: ");                // 打印Y
+    printf("%f", jy901s_data.gyroY);  // 转换为角速度
+    printf("°/s\t");
+
+    printf("gyroZ: ");                // 打印Z
+    printf("%f", jy901s_data.gyroZ);  // 转换为角速度
+    printf("°/s\n");
+}
+
+// 打印JY901的加速度数据到串口
+void jy901s_printacc(JY901S_DATA jy901s_data)
+{
+    //加速度
+    printf("accX: ");                // 打印accX
+    printf("%f", jy901s_data.accX);  // 转换为加速度
+    printf("m/s^2\t");
+
+    printf("accY: ");                 // 打印accY
+    printf("%f", jy901s_data.accY);   // 转换为加速度
+    printf("m/s^2\t");
+
+    printf("accZ: ");                 // 打印accZ
+    printf("%f", jy901s_data.accZ);   // 转换为加速度
+    printf("m/s^2\n");
+}
+
+// 打印JY901的磁场数据到串口
+void jy901s_printmag(JY901S_DATA jy901s_data)
+{
+    //磁场
+    printf("magX: ");              // 打印X
+    printf("%f", jy901s_data.magX);  
+    printf("mGs\t");
+
+    printf("magY: ");             // 打印Y
+    printf("%f", jy901s_data.magY); 
+    printf("mGs\t");
+
+    printf("magZ: ");             // 打印Z
+    printf("%f", jy901s_data.magZ);   
+    printf("mGs\n");
 }
