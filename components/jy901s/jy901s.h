@@ -11,11 +11,15 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-// 初始化UART
-#define UART_NUM UART_NUM_0 // 选择串口号
+// 初始化 UART
 #define BUF_SIZE 256        // 缓冲区大小
 #define BAUD_RATE 9600      // 波特率
 #define g 9.7887            // 深圳重力加速度
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 // 定义 JY901S 的数据结构体
 typedef struct
 {
@@ -34,7 +38,7 @@ typedef struct
 } JY901S_DATA;
 
 // 初始化 JY901 串口
-void jy901s_init(void);
+void jy901s_init(uint8_t uart_num, uint8_t tx_num, uint8_t rx_num);
 
 // 读取并处理 JY901 数据
 JY901S_DATA jy901s_read(JY901S_DATA jy901s_data);
@@ -53,5 +57,9 @@ void jy901s_printacc(JY901S_DATA jy901s_data);
 
 // 打印JY901的磁场数据到串口
 void jy901s_printmag(JY901S_DATA jy901s_data);
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #endif // _JY901S_H_

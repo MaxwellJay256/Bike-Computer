@@ -9,7 +9,7 @@
 static const char *TAG = "JY901S"; // 日志标签
 
 // 初始化串口
-void jy901s_init()
+void jy901s_init(uint8_t uart_num, uint8_t tx_num, uint8_t rx_num)
 {
     // 配置串口参数结构体
     uart_config_t uart_config = {
@@ -19,10 +19,9 @@ void jy901s_init()
         .stop_bits = UART_STOP_BITS_1,        // 停止位
         .flow_ctrl = UART_HW_FLOWCTRL_DISABLE // 无流控
     };
-    // 设置串口参数
-    uart_param_config(UART_NUM, &uart_config);
-    // 安装串口驱动
-    uart_driver_install(UART_NUM, BUF_SIZE * 2, 0, 0, NULL, 0);
+    ESP_ERROR_CHECK(uart_param_config(uart_num, &uart_config));
+    ESP_ERROR_CHECK(uart_set_pin(uart_num, tx_num, rx_num, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
+    ESP_ERROR_CHECK(uart_driver_install(uart_num, BUF_SIZE * 2, 0, 0, NULL, 0));
 }
 
 // 接收处理数据，返回JY901S_DATA结构体
@@ -32,10 +31,10 @@ JY901S_DATA jy901s_read(JY901S_DATA jy901s_data)
     int len = 0;              // 接收数据长度
     uint8_t sumcrc = 0x55;    // 校验和
     uint8_t type = 0;         // 数据类型
-    int16_t data1 = 0;        // 数据1
-    int16_t data2 = 0;        // 数据2
-    int16_t data3 = 0;        // 数据3
-    int16_t data4 = 0;        // 数据4
+    int16_t data1 = 0;        // 数据 1
+    int16_t data2 = 0;        // 数据 2
+    int16_t data3 = 0;        // 数据 3
+    // int16_t data4 = 0;        // 数据 4（温度、版本号、电压等）
     // 读取数据
     len = uart_read_bytes(UART_NUM, buffer, BUF_SIZE, 100 / portTICK_RATE_MS);
     if (len > 0)
@@ -63,7 +62,7 @@ JY901S_DATA jy901s_read(JY901S_DATA jy901s_data)
                 sumcrc += buffer[i++];
                 sumcrc += buffer[i++];
                 // 获取数据4
-                data4 = (int16_t)((int16_t)buffer[i + 1] << 8 | buffer[i]); // 高低字节合并
+                // data4 = (int16_t)((int16_t)buffer[i + 1] << 8 | buffer[i]); // 高低字节合并
                 sumcrc += buffer[i++];
                 sumcrc += buffer[i++];
                 // 检查校验和
@@ -108,7 +107,7 @@ JY901S_DATA jy901s_read(JY901S_DATA jy901s_data)
                 }
                 else
                 {
-                    // ESP_LOGI(TAG, "Data invalid");
+                    ESP_LOGW(TAG, "Invalid data");
                 }
             }
         }
