@@ -1,10 +1,13 @@
 /**
  * @file gps.h
  * @brief GPS driver header file
-*/
-
+ */
 #ifndef __GPS_H__
 #define __GPS_H__
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -19,9 +22,9 @@
 #include <math.h>
 
 //GPS模块的串口号、引脚号和相关计算数据
-#define UART_GPS UART_NUM_2
-#define UART_GPS_TXD GPIO_NUM_16
-#define UART_GPS_RXD GPIO_NUM_18
+#define UART_GPS UART_NUM_0
+#define UART_GPS_TXD GPIO_NUM_1
+#define UART_GPS_RXD GPIO_NUM_3
 
 /// @brief GPS数据结构体
 typedef struct GPS_data_
@@ -38,27 +41,30 @@ typedef struct GPS_data_
     int day;
     int month;
     int year;
-}GPS_data;
+} GPS_data;
 
 typedef struct UTC_time
 {
     int hour;
     int minute;
     int second;
-}UTCtime;
+} UTCtime;
 
 typedef struct UTC_date
 {
     int day;
     int month;
     int year;
-}UTCdate;
-
+} UTCdate;
 
 /// @brief 初始化 GPS模块
 esp_err_t GPS_init();
 
 /// @brief 从 GPS模块读取数据
-GPS_data get_gps_value();
+GPS_data gps_get_value(void);
 
-#endif 
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
+#endif // __GPS_H__

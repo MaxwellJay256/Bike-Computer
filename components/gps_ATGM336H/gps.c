@@ -27,7 +27,7 @@ static UTCdate UTCDate_to_BJDate(double UTC_date)
 }
 
 /// @brief 读取GPS模块的串口数据
-GPS_data get_gps_value()
+GPS_data gps_get_value()
 {
     esp_log_level_set(TAG, ESP_LOG_INFO);
     GPS_data gps_data;
@@ -116,8 +116,6 @@ GPS_data get_gps_value()
     }
     return gps_data;
 }
-
-
 
 /// @brief 初始化GPS模块
 esp_err_t GPS_init()
