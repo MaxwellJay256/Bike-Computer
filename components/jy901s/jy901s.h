@@ -41,7 +41,7 @@ typedef struct
 void jy901s_init(uint8_t uart_num, uint8_t tx_num, uint8_t rx_num);
 
 // 读取并处理 JY901 数据
-JY901S_DATA jy901s_read(JY901S_DATA jy901s_data);
+JY901S_DATA jy901s_read(uint8_t uart_num);
 
 // 打印 JY901 数据
 void jy901s_printall(JY901S_DATA jy901s_data);

@@ -25,7 +25,7 @@ void jy901s_init(uint8_t uart_num, uint8_t tx_num, uint8_t rx_num)
 }
 
 // 接收处理数据，返回JY901S_DATA结构体
-JY901S_DATA jy901s_read(JY901S_DATA jy901s_data)
+JY901S_DATA jy901s_read(uint8_t uart_num)
 {
     uint8_t buffer[BUF_SIZE]; // 接收缓冲区
     int len = 0;              // 接收数据长度
@@ -35,8 +35,9 @@ JY901S_DATA jy901s_read(JY901S_DATA jy901s_data)
     int16_t data2 = 0;        // 数据 2
     int16_t data3 = 0;        // 数据 3
     // int16_t data4 = 0;        // 数据 4（温度、版本号、电压等）
+    JY901S_DATA data; // 接收到的数据
     // 读取数据
-    len = uart_read_bytes(UART_NUM, buffer, BUF_SIZE, 100 / portTICK_RATE_MS);
+    len = uart_read_bytes(uart_num, buffer, BUF_SIZE, 100 / portTICK_RATE_MS);
     if (len > 0)
     {
         ESP_LOGI(TAG, "Receive %d bytes", len);
@@ -78,28 +79,28 @@ JY901S_DATA jy901s_read(JY901S_DATA jy901s_data)
                     {
                     case 0x51: // 加速度
                         // 将数据存储到jy901_data结构体中
-                        jy901s_data.accX = data1/32768.0*16*g; // 读取X轴加速度
-                        jy901s_data.accY = data2/32768.0*16*g; // 读取Y轴加速度
-                        jy901s_data.accZ = data3/32768.0*16*g; // 读取Z轴加速度
+                        data.accX = data1/32768.0*16*g; // 读取X轴加速度
+                        data.accY = data2/32768.0*16*g; // 读取Y轴加速度
+                        data.accZ = data3/32768.0*16*g; // 读取Z轴加速度
                         break;
                     case 0x52: // 角速度
                         // 将数据存储到jy901_data结构体中
-                        jy901s_data.gyroX = data1/32768.0*2000; // 读取X轴角速度
-                        jy901s_data.gyroY = data2/32768.0*2000; // 读取Y轴角速度
-                        jy901s_data.gyroZ = data3/32768.0*2000; // 读取Z轴角速度
+                        data.gyroX = data1/32768.0*2000; // 读取X轴角速度
+                        data.gyroY = data2/32768.0*2000; // 读取Y轴角速度
+                        data.gyroZ = data3/32768.0*2000; // 读取Z轴角速度
                         break;
                     case 0x53: // 角度
                         // 将数据存储到jy901_data结构体中
-                        jy901s_data.roll  = data1/ 32768.0 * 180.0;  // 读取横滚角
-                        jy901s_data.pitch = data2/ 32768.0 * 180.0;  // 读取俯仰角
-                        jy901s_data.yaw   = data3/ 32768.0 * 180.0;  // 读取偏航角
+                        data.roll  = data1/ 32768.0 * 180.0;  // 读取横滚角
+                        data.pitch = data2/ 32768.0 * 180.0;  // 读取俯仰角
+                        data.yaw   = data3/ 32768.0 * 180.0;  // 读取偏航角
                         // printf(i);
                         break;
                     case 0x54: // 磁场
                         // 将数据存储到jy901_data结构体中
-                        jy901s_data.magX = data1; // 读取X轴磁场
-                        jy901s_data.magY = data2; // 读取Y轴磁场
-                        jy901s_data.magZ = data3; // 读取Z轴磁场
+                        data.magX = data1; // 读取X轴磁场
+                        data.magY = data2; // 读取Y轴磁场
+                        data.magZ = data3; // 读取Z轴磁场
                         break;
                     default: // 其他类型
                         break;
@@ -116,7 +117,7 @@ JY901S_DATA jy901s_read(JY901S_DATA jy901s_data)
     {
         ESP_LOGW(TAG, "No data");
     }
-    return jy901s_data;
+    return data;
 }
 
 // 打印JY901的所有数据到串口
