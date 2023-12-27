@@ -30,29 +30,35 @@ static UTCdate UTCDate_to_BJDate(double UTC_date)
 GPS_data get_gps_value()
 {
     esp_log_level_set(TAG, ESP_LOG_INFO);
-    GPS_data gps_data;
-    // bzero(&gps_data, sizeof(gps_data)); // 清空
+    GPS_data gps_data = { 0 };
     const int rxBytes = uart_read_bytes(UART_GPS, GPS_temp_data, GPS_RX_BUF_SIZE, 1000 / portTICK_RATE_MS);
     ESP_LOGE(TAG, "rxBytes: %d\n", rxBytes);
     if (rxBytes > 0)
     {
-        // ESP_LOGI(GPS_TAG, "GPS_temp_data: %s\n", GPS_temp_data);//打印数据，测试用
+        ESP_LOGI(TAG, "GPS_temp_data: %s\n", GPS_temp_data); // 打印数据，测试用
         GPS_temp_data[rxBytes] = 0;
-        char *row = strstr(GPS_temp_data, "$GNRMC"); // 截取GNRMC数据
+        char *row = strstr(GPS_temp_data, "$GNRMC");  // 截取GNRMC数据
         char *row2 = strstr(GPS_temp_data, "$GNGGA"); // 截取GPRMC数据
         if (row == NULL)
         {
             ESP_LOGI(TAG, "row is NULL\n");
+            return gps_data;
         }
         else
         {
             char *token = strtok(row, ",");
+            // ESP_LOGI(TAG, "tokenbefore: %s\n", token);
             int count = 0;
             UTCtime temp_BJtime;
             UTCdate temp_BJdate;
-            while (token != NULL)
+            while (count < 11)
             {
                 count++;
+                if (strcmp(token, "V") == 0)
+                {
+                    ESP_LOGI(TAG, "未定位\n");
+                    return gps_data;
+                }
                 switch (count)
                 {
                 case 2: // UTC时间
@@ -87,13 +93,15 @@ GPS_data get_gps_value()
             // ESP_LOGI(TAG, "lat: %f,   lon: %f   \n", gps_data.latitude, gps_data.longitude); // 输出经纬度，测试用
             //     ESP_LOGE(TAG, "speed: %f\n", gps_data.speed_ms); // 输出速度，测试用
             // ESP_LOGI(TAG, "======================================================\n");
-            //输出方位角和时间
+            // 输出方位角和时间
             // ESP_LOGI(TAG, "course: %f\n", gps_data.course); // 输出方位角，测试用
             // ESP_LOGI(TAG, "time: %d:%d:%d\n", gps_data.hour, gps_data.minute, gps_data.second);
         }
         if (row2 == NULL)
         {
             ESP_LOGI(TAG, "row2 is NULL\n");
+            gps_data.altitude = 0;
+            return gps_data;
         }
         else
         {
@@ -114,10 +122,12 @@ GPS_data get_gps_value()
             // ESP_LOGI(TAG, "======================================================\n");
         }
     }
+    else
+    {
+        ESP_LOGI(TAG, "rxBytes = 0\n");
+    }
     return gps_data;
 }
-
-
 
 /// @brief 初始化GPS模块
 esp_err_t GPS_init()
