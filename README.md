@@ -4,6 +4,8 @@ HITSZ 2023 大一立项项目——自行车 GPS 码表
 
 Collaborators: [chaos](https://github.com/chaos0514), [Maxwell Jay](https://github.com/MaxwellJay256), [CY](https://github.com/CYCLECHENHUOHUA), [chickencheng](https://github.com/chickencheng)
 
+<img src="https://github.com/MaxwellJay256/Bike-Computer/assets/107470012/be9018b6-b457-4461-9c04-e241b6ffcd37" width=500 align="center">
+
 项目基于 `ESP32`，使用 `ESP-IDF v4.4.6` C 语言框架。
 
 ## Contents
