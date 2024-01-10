@@ -5,6 +5,7 @@
 ## Contents
 
 - [Bike-Computer-v2.eprj](./Bike-Computer-v2.eprj)：使用嘉立创 EDA 设计的电路工程
+- [Shell-for-v1](./Shell-for-v1)：为第 1 代墨水屏终端设计的 3D 打印外壳（不是码表的外壳）
 
 ## 硬件选型
 
